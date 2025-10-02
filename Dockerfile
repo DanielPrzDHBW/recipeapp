@@ -11,7 +11,7 @@ RUN go mod download
 
 # Copy the source code. Note the slash at the end, as explained in
 # https://docs.docker.com/reference/dockerfile/#copy
-COPY recipeapp/.go ./
+COPY recipeapp/*.go ./
 COPY recipeapp/api/ ./api/
 
 # Build
