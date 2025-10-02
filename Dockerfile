@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.25
+FROM alpine
 
 # Set destination for COPY
 WORKDIR /app
@@ -22,9 +22,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /recipeapp
 # the application is going to listen on by default.
 # https://docs.docker.com/reference/dockerfile/#expose
 
-FROM alpine as final_image
-
-COPY --from=build_image /recipeapp /recipeapp
-
 EXPOSE 8080
+
 ENTRYPOINT ["/recipeapp"]
