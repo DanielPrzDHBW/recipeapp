@@ -3,15 +3,15 @@
 FROM golang:1.25.1-alpine
 
 # Set destination for COPY
-WORKDIR /app
+WORKDIR /recipeapp
 
 # Download Go modules
-COPY app/go.mod app/go.sum ./
+COPY recipeapp/go.mod recipeapp/go.sum ./
 RUN go mod download
 
 # Copy the source code. Note the slash at the end, as explained in
 # https://docs.docker.com/reference/dockerfile/#copy
-COPY app/*.go app/api/*go ./
+COPY recipeapp/*.go recipeapp/api/*go ./
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /recipeapp
