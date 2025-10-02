@@ -1,4 +1,4 @@
-module github.com/DanielPrzDHBW/recipeapp/app
+module recipeapp
 
 go 1.23.0
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/DanielPrzDHBW/recipeapp/app/api"
+	"recipeapp/api"
 
 	"github.com/gin-gonic/gin"
 )
