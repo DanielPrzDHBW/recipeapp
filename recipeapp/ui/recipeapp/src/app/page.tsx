@@ -1,34 +1,18 @@
 'use client';
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import Popup from 'reactjs-popup';
+import useSWR from 'swr'
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 
 export default function Home() {
   function Sleep(milliseconds: number) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
   }
 
-
-  const [data, setData] = useState();
   const [refetch, setRefetch] = useState(false);
-
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await fetch(`http://localhost:8080/api/newrecipes`)
-      .then(response => response.json())
-      .then((datac) => {
-            console.log(datac);
-            setData(datac);
-         })
-      .catch(error => {
-            alert('Error fetching data: ' + error);
-         });
-
-    }
-
-    fetchData();
-  }, [refetch])
     
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
@@ -71,7 +55,7 @@ export default function Home() {
           </a>
         </div>
         <div className="flex gap-4 items-center flex-col sm:w-9/12">
-          <Recipes datar={data} />
+          <Recipes reload={refetch}/>
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
@@ -137,12 +121,12 @@ var recipes = [
     dateModified: ""
   }
 ]
-function Recipes({ datar }: { datar: any }) {
-  if (!datar) {
-    return <div></div>;
-  }
+function Recipes(reload: any) {
+  const { data, error, isLoading } = useSWR('http://localhost:8080/api/newrecipes', fetcher)
+  if (error) return <div>Failed to load</div>
+  if (isLoading) return <div>Loading...</div>
   recipes = []
-  recipes = datar.recipe
+  recipes = data.recipe
 
   function handleClick(val: string) {
 
