@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var recipes = []models.Meal{} // Placeholder for a database
+
 // Placeholder to serve the landing page frontend
 func LandingPage(c *gin.Context) {
 	c.JSON(200, gin.H{
@@ -19,14 +21,14 @@ func LandingPage(c *gin.Context) {
 // Placeholder for future implementation of reading previous generated recipes from a database
 func GetRecipes(c *gin.Context) {
 	c.JSON(200, gin.H{
-		"message": "Here will be a list of recipes.",
+		"recipe": recipes,
 	})
 }
 
 // Generates 7 new recipes and returning the as a JSON array
 // TODO: Implement saving to the database
 func NewRecipes(c *gin.Context) {
-	recipes := []models.Meal{}
+	recipes = []models.Meal{}
 	for i := 0; i < 7; i++ {
 		resp, err := client.NewRecipe()
 		if err != nil {
