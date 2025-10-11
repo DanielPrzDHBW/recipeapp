@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func connectToSQLite() (*gorm.DB, error) {
+func ConnectToSQLite() (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open("recipes.db"), &gorm.Config{})
 	if err != nil {
 		return nil, err
