@@ -14,6 +14,9 @@ RUN go mod download
 COPY recipeapp/*.go ./
 COPY recipeapp/api/ ./api/
 COPY recipeapp/database/ ./database/
+COPY recipeapp/client/ ./client/
+COPY recipeapp/models/ ./models/
+COPY recipeapp/serverError/ ./serverError/
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /recipeapp
