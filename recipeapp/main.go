@@ -9,6 +9,8 @@ import (
 const port = ":8080"
 
 func main() {
+	database.ConnectToSQLite()
+
 	router := gin.Default()
 	router.GET("/", api.LandingPage) //Provides the frontend of the
 
