@@ -1,9 +1,9 @@
 package main
 
 import (
-	"recipeapp/api"
-
 	"github.com/gin-gonic/gin"
+	"recipeapp/api"
+	"recipeapp/database"
 )
 
 const port = ":8080"
