@@ -11,7 +11,12 @@ import (
 const port = ":8080"
 
 func main() {
-	_, err := database.ConnectToSQLite()
+	db, err := database.ConnectToSQLite()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = db.AutoMigrate(&database.RecipesEntry{})
 	if err != nil {
 		log.Fatal(err)
 	}

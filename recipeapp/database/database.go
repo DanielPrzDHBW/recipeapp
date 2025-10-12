@@ -1,12 +1,14 @@
 package database
 
 import (
+	"recipeapp/models"
+
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-// Connects to database. If db file does not exist it creates a new recipes.db file
+// ConnectToSQLite Connects to database. If db file does not exist it creates a new recipes.db file
 func ConnectToSQLite() (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open("recipes.db"), &gorm.Config{})
 	if err != nil {
@@ -16,23 +18,39 @@ func ConnectToSQLite() (*gorm.DB, error) {
 }
 
 type RecipesEntry struct {
-	UUID     string
-	DataJSON string
+	EntryUUID string
+	DataJSON  string
 }
 
-// Writes a new Result to DB under UUID and returns the uuid, so that it can be stored for access to the data
+// TODO: The GetRecipesFromDBByUUID-Function looks for []models.Meal{} in the database.
+// This function however stores DataJSON as a string in the database.
+// Resolving this issue depends on the datatype that is provided by api.go
+
+// CreateResult Writes a new Result to DB under UUID and returns the uuid, so that it can be stored for access to the data
 func CreateResult(db *gorm.DB, dataJSON string) (string, error) {
-	uuid := generateUUID()
+	entryUUID := generateUUID()
 	entry := RecipesEntry{
-		uuid,
+		entryUUID,
 		dataJSON,
 	}
 	db.Create(&entry)
-	return uuid, nil
+	if db.Error != nil {
+		return "", db.Error
+	}
+	return entryUUID, nil
 }
 
 // Generates new UUID for new DB entry
 func generateUUID() string {
-	uuid := uuid.New()
-	return uuid.String()
+	entryUUID := uuid.New()
+	return entryUUID.String()
+}
+
+// GetRecipesFromDBByUUID Reads the saved data from the DB and returns it
+func GetRecipesFromDBByUUID(db *gorm.DB, uuid string) ([]models.Meal, error) {
+	result := db.First(&[]models.Meal{}, "uuid = ?", uuid)
+	if result.Error != nil {
+		return []models.Meal{}, result.Error
+	}
+	return []models.Meal{}, nil
 }
