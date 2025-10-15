@@ -17,10 +17,12 @@ type RecipesEntry struct {
 	Meals     MealsJSON `gorm:"type:json"`
 }
 
+// Value marshals the MealsJSON slice into a JSON byte array for database storage
 func (m MealsJSON) Value() (driver.Value, error) {
 	return json.Marshal(m)
 }
 
+// Scan unmarshals JSON data from the database back into a MealsJSON slice
 func (m *MealsJSON) Scan(value interface{}) error {
 	bytes, ok := value.([]byte)
 	if !ok {
@@ -29,7 +31,7 @@ func (m *MealsJSON) Scan(value interface{}) error {
 	return json.Unmarshal(bytes, m)
 }
 
-// ConnectToSQLite Connects to database. If db file does not exist it creates a new recipes.db file
+// ConnectToSQLite opens (or creates) the SQLite database and returns the DB instance
 func ConnectToSQLite() (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open("recipes.db"), &gorm.Config{})
 	if err != nil {
@@ -38,7 +40,7 @@ func ConnectToSQLite() (*gorm.DB, error) {
 	return db, nil
 }
 
-// CreateResult Writes a new Result to DB under UUID and returns the uuid, so that it can be stored for access to the data
+// CreateResult creates a new RecipesEntry in the database and returns its UUID
 func CreateResult(db *gorm.DB, meals []models.Meal) (uuid.UUID, error) {
 	entryUUID := uuid.New()
 	entry := RecipesEntry{
@@ -51,7 +53,7 @@ func CreateResult(db *gorm.DB, meals []models.Meal) (uuid.UUID, error) {
 	return entryUUID, nil
 }
 
-// GetRecipesFromDBByUUID Reads the saved data from the DB and returns it
+// GetRecipesFromDBByUUID retrieves a RecipesEntry by UUID and returns its Meals slice
 func GetRecipesFromDBByUUID(db *gorm.DB, id uuid.UUID) ([]models.Meal, error) {
 	var entry RecipesEntry
 	if err := db.First(&entry, "entry_uuid = ?", id).Error; err != nil {
