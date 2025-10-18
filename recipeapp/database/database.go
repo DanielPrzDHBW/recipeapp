@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"recipeapp/client"
 	"recipeapp/models"
 
 	"github.com/google/uuid"
@@ -41,8 +42,9 @@ func ConnectToSQLite() (*gorm.DB, error) {
 }
 
 // CreateResult creates a new RecipesEntry in the database and returns its UUID
-func CreateResult(db *gorm.DB, meals []models.Meal) (uuid.UUID, error) {
+func CreateResult(db *gorm.DB, response *client.Response) (uuid.UUID, error) {
 	entryUUID := uuid.New()
+	meals := response.Meals
 	entry := RecipesEntry{
 		EntryUUID: entryUUID,
 		Meals:     meals,
