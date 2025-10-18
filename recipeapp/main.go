@@ -1,7 +1,9 @@
 package main
 
 import (
+	"log"
 	"recipeapp/api"
+	"recipeapp/database"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,6 +11,16 @@ import (
 const port = ":8080"
 
 func main() {
+	db, err := database.ConnectToSQLite()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = db.AutoMigrate(&database.RecipesEntry{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	router := gin.Default()
 	router.GET("/", api.LandingPage) //Provides the frontend of the
 
