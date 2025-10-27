@@ -2,7 +2,10 @@ module recipeapp
 
 go 1.25.1
 
-require github.com/gin-gonic/gin v1.11.0
+require (
+	github.com/gin-gonic/contrib v0.0.0-20250521004450-2b1292699c15
+	github.com/gin-gonic/gin v1.11.0
+)
 
 require (
 	github.com/bytedance/sonic v1.14.0 // indirect

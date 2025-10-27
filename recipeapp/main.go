@@ -3,6 +3,7 @@ package main
 import (
 	"recipeapp/api"
 
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,7 +11,7 @@ const port = ":8080"
 
 func main() {
 	router := gin.Default()
-	router.GET("/", api.LandingPage) //Provides the frontend of the
+	router.Use(static.Serve("/", static.LocalFile("./ui/recipeapp/out", true))) // Serving the frontend
 
 	apiGroup := router.Group("/api") // API group for all API routes
 	apiGroup.Use(func(c *gin.Context) {

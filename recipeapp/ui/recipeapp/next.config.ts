@@ -1,13 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-module.exports = {
+  output: "export",
   images: {
     remotePatterns: [new URL('https://www.themealdb.com/images/**')],
+    unoptimized: true,
   },
-}
+};
 
-export default nextConfig;
+module.exports = nextConfig;

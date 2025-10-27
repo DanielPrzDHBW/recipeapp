@@ -13,9 +13,6 @@ var recipes = []models.Meal{} // Placeholder for a database
 
 // Placeholder to serve the landing page frontend
 func LandingPage(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "Welcome to the Recipe API!",
-	})
 }
 
 // Placeholder for future implementation of reading previous generated recipes from a database
