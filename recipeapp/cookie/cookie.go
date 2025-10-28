@@ -1,28 +1,22 @@
 package cookie
 
 import (
-	"net/http"
-
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-// SetCookie handles requests to /set and sets a cookie in the client's browser
-func SetCookie(w http.ResponseWriter, uuid uuid.UUID) {
-	http.SetCookie(w, &http.Cookie{
-		Name:  "recipes",
-		Value: uuid.String(),
-	})
+func setCookieHandler(c *gin.Context, uuid uuid.UUID) {
+	c.SetCookie("user_recipes", uuid.String(), 604800, "", "", false, true)
 }
 
-// GetCookie handles requests to /get and tries to read the previously set cookie
-func GetCookie(r *http.Request) (uuid.UUID, error) {
-	c, err := r.Cookie("recipes")
+func getCookieHandler(c *gin.Context) (uuid.UUID, error) {
+	cookie, err := c.Cookie("user_recipes")
 	if err != nil {
 		return uuid.Nil, err
 	}
-	id, err := uuid.Parse(c.Value)
+	id, err := uuid.Parse(cookie)
 	if err != nil {
-		return uuid.Nil, err
+		return id, err
 	}
 	return id, nil
 }
