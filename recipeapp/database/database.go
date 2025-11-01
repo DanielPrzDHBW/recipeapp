@@ -3,13 +3,15 @@ package database
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"recipeapp/client"
+	"errors"
 	"recipeapp/models"
 
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+var db *gorm.DB
 
 type MealsJSON []models.Meal
 
@@ -41,10 +43,10 @@ func ConnectToSQLite() (*gorm.DB, error) {
 	return db, nil
 }
 
-// CreateResult creates a new RecipesEntry in the database and returns its UUID
-func CreateResult(db *gorm.DB, response *client.Response) (uuid.UUID, error) {
+// CreateEntry creates a new RecipesEntry in the database and returns its UUID
+func CreateEntry(db *gorm.DB, response []models.Meal) (uuid.UUID, error) {
 	entryUUID := uuid.New()
-	meals := response.Meals
+	meals := response
 	entry := RecipesEntry{
 		EntryUUID: entryUUID,
 		Meals:     meals,
@@ -62,4 +64,15 @@ func GetRecipesFromDBByUUID(db *gorm.DB, id uuid.UUID) ([]models.Meal, error) {
 		return nil, err
 	}
 	return entry.Meals, nil
+}
+
+func SetDB(database *gorm.DB) {
+	db = database
+}
+
+func GetDB() (*gorm.DB, error) {
+	if db == nil {
+		return nil, errors.New("database connection is nil")
+	}
+	return db, nil
 }

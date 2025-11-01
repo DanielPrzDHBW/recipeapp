@@ -6,20 +6,15 @@ import (
 	"recipeapp/database"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 const port = ":8080"
 
-func main() {
-	db, err := database.ConnectToSQLite()
-	if err != nil {
-		log.Fatal(err)
-	}
+var db *gorm.DB
 
-	err = db.AutoMigrate(&database.RecipesEntry{})
-	if err != nil {
-		log.Fatal(err)
-	}
+func main() {
+	db = initDB()
 
 	router := gin.Default()
 	router.GET("/", api.LandingPage) //Provides the frontend of the
@@ -33,4 +28,17 @@ func main() {
 	apiGroup.GET("/newrecipes", api.NewRecipes) // Get a list of new Recipes from the database by the users cookies
 
 	router.Run(port) // listen and serve on
+}
+
+func initDB() *gorm.DB {
+	dbNew, err := database.ConnectToSQLite()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = dbNew.AutoMigrate(&database.RecipesEntry{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	database.SetDB(dbNew)
+	return dbNew
 }

@@ -1,22 +1,29 @@
 package cookie
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
-func setCookieHandler(c *gin.Context, uuid uuid.UUID) {
-	c.SetCookie("user_recipes", uuid.String(), 604800, "", "", false, true)
+func SetCookie(c *gin.Context, token string) {
+	// Set cookie
+	token_lifespan := 30
+	c.SetCookie("recipe_cookie", token, token_lifespan*60*60*24, "/", "localhost", false, true)
+
+	cookie, err := c.Cookie("recipe_cookie")
+	if err != nil {
+		cookie = "NotSet"
+	}
+
+	fmt.Printf("Cookie value: %s \n", cookie)
 }
 
-func getCookieHandler(c *gin.Context) (uuid.UUID, error) {
-	cookie, err := c.Cookie("user_recipes")
+func GetCookie(c *gin.Context) string {
+	cookie, err := c.Cookie("recipe_cookie")
 	if err != nil {
-		return uuid.Nil, err
+		fmt.Println("Error retrieving cookie:", err)
+		return ""
 	}
-	id, err := uuid.Parse(cookie)
-	if err != nil {
-		return id, err
-	}
-	return id, nil
+	return cookie
 }
