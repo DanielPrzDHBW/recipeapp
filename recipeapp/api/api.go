@@ -2,11 +2,15 @@ package api
 
 import (
 	"errors"
+	"log"
 	"recipeapp/client"
+	"recipeapp/cookie"
+	"recipeapp/database"
 	"recipeapp/models"
 	"recipeapp/serverError"
 
 	"github.com/gin-gonic/gin"
+  "github.com/google/uuid"
 )
 
 var recipes = []models.Meal{}        // Placeholder for a database
@@ -22,12 +26,21 @@ func GetRecipes(c *gin.Context) {
 		"recipe":        recipes,
 		"shopping_list": shoppingList,
 	})
+	id, err := uuid.Parse(cookie.GetCookie(c))
+	if err != nil {
+		log.Fatal(err)
+	}
+	db, err := database.GetDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	database.GetRecipesFromDBByUUID(db, id)
+	// TODO: implement further usage of the recipes
 }
 
 // Generates 7 new recipes and returning the as a JSON array
-// TODO: Implement saving to the database
 func NewRecipes(c *gin.Context) {
-	recipes = []models.Meal{}
+	recipes := []models.Meal{}
 	for i := 0; i < 7; i++ {
 		resp, err := client.NewRecipe()
 		if err != nil {
@@ -54,4 +67,13 @@ func NewRecipes(c *gin.Context) {
 		"recipe":        recipes,
 		"shopping_list": shoppingList,
 	})
+	db, err := database.GetDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	id, err := database.CreateEntry(db, recipes)
+	if err != nil {
+		log.Fatal(err)
+	}
+	cookie.SetCookie(c, id.String())
 }
