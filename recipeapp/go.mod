@@ -5,7 +5,6 @@ go 1.25.1
 require (
 	github.com/gin-gonic/contrib v0.0.0-20250521004450-2b1292699c15
 	github.com/gin-gonic/gin v1.11.0
-	github.com/gin-gonic/gin v1.11.0
 	github.com/google/uuid v1.6.0
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.31.0
