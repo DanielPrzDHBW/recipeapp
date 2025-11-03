@@ -9,7 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var recipes = []models.Meal{} // Placeholder for a database
+var recipes = []models.Meal{}        // Placeholder for a database
+var shoppingList = []string{"test0"} // Placeholder for a database
 
 // Placeholder to serve the landing page frontend
 func LandingPage(c *gin.Context) {
@@ -18,7 +19,8 @@ func LandingPage(c *gin.Context) {
 // Placeholder for future implementation of reading previous generated recipes from a database
 func GetRecipes(c *gin.Context) {
 	c.JSON(200, gin.H{
-		"recipe": recipes,
+		"recipe":        recipes,
+		"shopping_list": shoppingList,
 	})
 }
 
@@ -47,7 +49,9 @@ func NewRecipes(c *gin.Context) {
 			i--
 		}
 	}
+	shoppingList = append(shoppingList, "Test Item 1", "Test Item 2", "Test Item 3") // Placeholder for shopping list generation
 	c.JSON(200, gin.H{
-		"recipe": recipes,
+		"recipe":        recipes,
+		"shopping_list": shoppingList,
 	})
 }

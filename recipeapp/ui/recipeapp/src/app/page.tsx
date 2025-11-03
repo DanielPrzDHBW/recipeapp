@@ -8,65 +8,6 @@ import React from "react";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-
-export default function Home() {
-
-  const { mutate } = useSWRConfig()
-  const { data, trigger:newrecipe } = useSWRMutation('http://localhost:8080/api/newrecipes', fetcher)
-  const [showNew, setShowNew] = useState(false);
-
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-center">
-          RecipeApp
-        </h1>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto gap-2"
-            onClick={async () => {
-              await newrecipe();
-              setShowNew(true);
-            }}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/recipe.svg"
-              alt="Recipe icon"
-              width={20}
-              height={20}
-            />
-            Generate Recipes
-          </a>
-
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto gap-2 "
-            onClick={() => alert('Generate Recipes clicked!')}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/shoppinglist.svg"
-              alt="shoppinglist icon"
-              width={20}
-              height={20}
-            />
-            Shopping List
-          </a>
-        </div>
-        <div className="flex gap-4 items-center flex-col sm:w-9/12">
-          <RecipesComp extData={showNew && data ? data : undefined} />
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-      </footer>
-    </div>
-  );
-}
-
 type Recipe =
   {
     idMeal: string,
@@ -126,6 +67,96 @@ type Recipe =
 
 type Recipes = {
   recipe: Recipe[]
+  shopping_list: string[]
+}
+
+export default function Home() {
+
+
+  const { mutate } = useSWRConfig()
+  const { data, trigger: newrecipe } = useSWRMutation('http://localhost:8080/api/newrecipes', fetcher)
+  const [showNew, setShowNew] = useState(false);
+  const [data_global, setDataGlobal] = useState<Recipes>({ recipe: [], shopping_list: [] });
+
+  return (
+    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
+      <main className="flex flex-col gap-[32px] row-start-2 items-center">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-center">
+          RecipeApp
+        </h1>
+        <div className="flex gap-4 items-center flex-col sm:flex-row">
+          <a
+            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto gap-2"
+            onClick={async () => {
+              await newrecipe();
+              setDataGlobal(data as Recipes);
+              setShowNew(true);
+            }}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              className="dark:invert"
+              src="/recipe.svg"
+              alt="Recipe icon"
+              width={20}
+              height={20}
+            />
+            Generate Recipes
+          </a>
+          <Popup
+            trigger={
+              <a
+                className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto gap-2 "
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Image
+                  className="dark:invert"
+                  src="/shoppinglist.svg"
+                  alt="shoppinglist icon"
+                  width={20}
+                  height={20}
+                />
+                Shopping List
+              </a>
+            }
+            modal
+            nested
+            contentStyle={{ padding: 0, border: "none", background: "none" }}
+          >
+            {((close: () => void) => (
+              <>
+                <div className="overflow-y-auto bg-gray-800 p-8 rounded shadow-lg flex flex-col items-center max-h-[90vh] max-w-[80vw] min-w-[40vw]">
+                  <h1 className="text-2xl font-bold mb-4">Shopping List</h1>
+
+                  <ul className="text-center">
+                    {data_global?.shopping_list?.map((item: string, idx: number) =>
+                      <li key={idx}>
+                        {item}
+                      </li>
+                    )}
+                  </ul>
+                  <button
+                    className="mt-4 px-4 py-2 bg-gray-200 text-gray-500 rounded"
+                    onClick={close}
+                  >
+                    Close
+                  </button>
+                </div>
+              </>
+            )) as any}
+          </Popup>
+
+        </div>
+        <div className="flex gap-4 items-center flex-col sm:w-9/12">
+          <RecipesComp extData={showNew && data ? data : undefined} global_data={setDataGlobal} />
+        </div>
+      </main>
+      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
+      </footer>
+    </div>
+  );
 }
 
 function RecipePopupContent({ recipe, close }: { recipe: Recipe, close: () => void }) {
@@ -179,7 +210,7 @@ function RecipePopupContent({ recipe, close }: { recipe: Recipe, close: () => vo
   );
 }
 
-function RecipesComp({ extData }: { extData?: Recipes }) {
+function RecipesComp({ extData, global_data }: { extData?: Recipes, global_data: React.Dispatch<React.SetStateAction<Recipes>> }) {
   // Only fetch from SWR if extData is not present
   const { data, error, isLoading } = !extData
     ? useSWR<Recipes>('http://localhost:8080/api/recipes', fetcher)
@@ -189,6 +220,7 @@ function RecipesComp({ extData }: { extData?: Recipes }) {
   if (isLoading) return <div>Loading...</div>
   if (!data) return null;
 
+  global_data(data as Recipes);
   return (
     <>
       {data.recipe.map((recipe: Recipe) =>
