@@ -16,7 +16,7 @@ COPY recipeapp/api/ ./api/
 COPY recipeapp/client/ ./client/
 COPY recipeapp/models/ ./models/
 COPY recipeapp/serverError/ ./serverError/
-COPY recipeapp/ui/out ./ui/out
+COPY recipeapp/ui/recipeapp/out ./ui/recipeapp/out
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /recipeapp
