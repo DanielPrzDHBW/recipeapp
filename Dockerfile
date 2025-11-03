@@ -13,7 +13,6 @@ RUN go mod download
 # https://docs.docker.com/reference/dockerfile/#copy
 COPY recipeapp/*.go ./
 COPY recipeapp/api/ ./api/
-COPY recipeapp/ui/out ./ui/out
 COPY recipeapp/database/ ./database/
 COPY recipeapp/client/ ./client/
 COPY recipeapp/models/ ./models/
