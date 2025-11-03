@@ -10,7 +10,7 @@ import (
 	"recipeapp/serverError"
 
 	"github.com/gin-gonic/gin"
-  "github.com/google/uuid"
+	"github.com/google/uuid"
 )
 
 var recipes = []models.Meal{}        // Placeholder for a database
