@@ -2,11 +2,15 @@ package api
 
 import (
 	"errors"
+	"log"
 	"recipeapp/client"
+	"recipeapp/cookie"
+	"recipeapp/database"
 	"recipeapp/models"
 	"recipeapp/serverError"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // Placeholder to serve the landing page frontend
@@ -21,10 +25,19 @@ func GetRecipes(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "Here will be a list of recipes.",
 	})
+	id, err := uuid.Parse(cookie.GetCookie(c))
+	if err != nil {
+		log.Fatal(err)
+	}
+	db, err := database.GetDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	database.GetRecipesFromDBByUUID(db, id)
+	// TODO: implement further usage of the recipes
 }
 
 // Generates 7 new recipes and returning the as a JSON array
-// TODO: Implement saving to the database
 func NewRecipes(c *gin.Context) {
 	recipes := []models.Meal{}
 	for i := 0; i < 7; i++ {
@@ -51,4 +64,13 @@ func NewRecipes(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"recipe": recipes,
 	})
+	db, err := database.GetDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	id, err := database.CreateEntry(db, recipes)
+	if err != nil {
+		log.Fatal(err)
+	}
+	cookie.SetCookie(c, id.String())
 }
