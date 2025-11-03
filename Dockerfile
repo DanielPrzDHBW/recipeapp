@@ -13,10 +13,13 @@ RUN go mod download
 # https://docs.docker.com/reference/dockerfile/#copy
 COPY recipeapp/*.go ./
 COPY recipeapp/api/ ./api/
+COPY recipeapp/ui/out ./ui/out
+COPY recipeapp/database/ ./database/
 COPY recipeapp/client/ ./client/
 COPY recipeapp/models/ ./models/
 COPY recipeapp/serverError/ ./serverError/
-COPY recipeapp/ui/out ./ui/out
+COPY recipeapp/recipes.db ./recipes.db/
+COPY recipeapp/cookie/ ./cookie/
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /recipeapp

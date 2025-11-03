@@ -1,17 +1,29 @@
 package main
 
 import (
+	"log"
 	"recipeapp/api"
+	"recipeapp/database"
 
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 const port = ":8080"
 
+var db *gorm.DB
+
 func main() {
+	db = initDB()
+
 	router := gin.Default()
 	router.Use(static.Serve("/", static.LocalFile("./ui/recipeapp/out", true))) // Serving the frontend
+
+	apiGroup := router.Group("/api") // API group for all API routes
+	apiGroup.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+	})
 
 	apiGroup := router.Group("/api") // API group for all API routes
 	apiGroup.Use(func(c *gin.Context) {
@@ -22,4 +34,17 @@ func main() {
 	apiGroup.GET("/newrecipes", api.NewRecipes) // Get a list of new Recipes from the database by the users cookies
 
 	router.Run(port) // listen and serve on
+}
+
+func initDB() *gorm.DB {
+	dbNew, err := database.ConnectToSQLite()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = dbNew.AutoMigrate(&database.RecipesEntry{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	database.SetDB(dbNew)
+	return dbNew
 }
