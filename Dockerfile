@@ -17,6 +17,7 @@ COPY recipeapp/database/ ./database/
 COPY recipeapp/client/ ./client/
 COPY recipeapp/models/ ./models/
 COPY recipeapp/serverError/ ./serverError/
+COPY recipeapp/ui/recipeapp/out ./ui/recipeapp/recipeapp/out
 COPY recipeapp/recipes.db ./recipes.db/
 COPY recipeapp/cookie/ ./cookie/
 
