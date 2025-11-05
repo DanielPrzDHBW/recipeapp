@@ -2,6 +2,8 @@ package shoppinglist
 
 import (
 	"recipeapp/models"
+	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -70,8 +72,8 @@ var nonStandardUnits = map[string]string{
 	"jar":     "Jar",
 }
 
-// ConvertMeals processes multiple meals and returns the standardized shopping list
-func (ic *IngredientConverter) ConvertMeals(meals []models.Meal) map[string]float64 {
+// ConvertMeals processes multiple meals and returns the standardized shopping list as string array
+func (ic *IngredientConverter) ConvertMeals(meals []models.Meal) []string {
 	// Reset the maps for new conversion
 	ic.standardizedIngredients = make(map[string]float64)
 	ic.ingredientUnits = make(map[string]string)
@@ -81,12 +83,42 @@ func (ic *IngredientConverter) ConvertMeals(meals []models.Meal) map[string]floa
 		ic.processMeal(meal)
 	}
 
-	return ic.standardizedIngredients
+	return ic.formatShoppingList()
 }
 
-// GetIngredientUnits returns the mapping of ingredients to their standard units
-func (ic *IngredientConverter) GetIngredientUnits() map[string]string {
-	return ic.ingredientUnits
+// formatShoppingList formats the shopping list as "ingredient-measurement-unit" strings
+func (ic *IngredientConverter) formatShoppingList() []string {
+	var shoppingList []string
+
+	// Get all ingredients and sort them for consistent output
+	ingredients := make([]string, 0, len(ic.standardizedIngredients))
+	for ingredient := range ic.standardizedIngredients {
+		ingredients = append(ingredients, ingredient)
+	}
+	sort.Strings(ingredients)
+
+	// Format each ingredient
+	for _, ingredient := range ingredients {
+		amount := ic.standardizedIngredients[ingredient]
+		unit := ic.ingredientUnits[ingredient]
+
+		// Format the amount nicely
+		amountStr := formatAmount(amount)
+
+		// Create the formatted string without spaces
+		item := ingredient + "-" + amountStr + "-" + unit
+		shoppingList = append(shoppingList, item)
+	}
+
+	return shoppingList
+}
+
+// formatAmount formats the amount nicely (removes .00 if whole number)
+func formatAmount(amount float64) string {
+	if amount == float64(int64(amount)) {
+		return strconv.Itoa(int(amount))
+	}
+	return strconv.FormatFloat(amount, 'f', 2, 64)
 }
 
 // processMeal processes a single meal and adds its ingredients to the total

@@ -2,21 +2,22 @@ package cookie
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func SetCookie(c *gin.Context, token string) {
 	// Set cookie
-	token_lifespan := 30
-	c.SetCookie("recipe_cookie", token, token_lifespan*60*60*24, "/", "localhost", false, true)
+	maxAge := int((30 * 24 * time.Hour).Seconds())
 
-	cookie, err := c.Cookie("recipe_cookie")
-	if err != nil {
-		cookie = "NotSet"
-	}
+	// host-only cookie (empty domain), not Secure for local dev, HttpOnly true
+	// always set the cookie (don't rely on presence in request)
+	c.SetCookie("recipe_cookie", token, maxAge, "/", "", false, true)
 
-	fmt.Printf("Cookie value: %s \n", cookie)
+	// debug: print Set-Cookie header(s) written to the response
+	fmt.Printf("Set-Cookie header(s) written: %v\n", c.Writer.Header().Values("Set-Cookie"))
+
 }
 
 func GetCookie(c *gin.Context) string {

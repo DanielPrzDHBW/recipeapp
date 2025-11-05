@@ -5,6 +5,7 @@ import (
 	"recipeapp/api"
 	"recipeapp/database"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -17,13 +18,19 @@ var db *gorm.DB
 func main() {
 	db = initDB()
 
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:8080"} // restrict to local frontend
+	config.AllowCredentials = true
+	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization", "Set-Cookie"}
+
 	router := gin.Default()
+	//router.Use(cors.New(config))
 	router.Use(static.Serve("/", static.LocalFile("./ui/recipeapp/out", true))) // Serving the frontend
 
 	apiGroup := router.Group("/api") // API group for all API routes
-	apiGroup.Use(func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-	})
+	//apiGroup.Use(func(c *gin.Context) {
+	//	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+	//})
 
 	apiGroup.GET("/recipes", api.GetRecipes)    // Get a list of saved Recipes from the database by the users cookies
 	apiGroup.GET("/newrecipes", api.NewRecipes) // Get a list of new Recipes from the database by the users cookies
