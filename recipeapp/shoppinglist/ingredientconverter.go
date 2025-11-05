@@ -13,14 +13,6 @@ type IngredientConverter struct {
 	ingredientUnits         map[string]string  // ingredient -> standard unit
 }
 
-// NewIngredientConverter creates a new IngredientConverter
-func NewIngredientConverter() *IngredientConverter {
-	return &IngredientConverter{
-		standardizedIngredients: make(map[string]float64),
-		ingredientUnits:         make(map[string]string),
-	}
-}
-
 // Conversion factors for mass units (to grams)
 var massUnits = map[string]float64{
 	"gram":        1,
