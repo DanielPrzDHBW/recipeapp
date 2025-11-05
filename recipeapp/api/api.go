@@ -25,6 +25,7 @@ func GetRecipes(c *gin.Context) {
 	id, err := uuid.Parse(cookie.GetCookie(c))
 	if err != nil {
 		log.Println(err)
+		return
 	}
 	db, err := database.GetDB()
 	if err != nil {
@@ -35,6 +36,7 @@ func GetRecipes(c *gin.Context) {
 		log.Println(err)
 		c.JSON(500, gin.H{
 			"error": "Internal server error"})
+		return
 	}
 	c.JSON(200, gin.H{
 		"recipe":        recipes,
