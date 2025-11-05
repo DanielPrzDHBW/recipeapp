@@ -20,6 +20,7 @@ COPY recipeapp/serverError/ ./serverError/
 COPY recipeapp/ui/recipeapp/out ./ui/recipeapp/recipeapp/out
 COPY recipeapp/recipes.db ./recipes.db/
 COPY recipeapp/cookie/ ./cookie/
+COPY recipeapp/shoppinglist/ ./shoppinglist/
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /recipeapp
