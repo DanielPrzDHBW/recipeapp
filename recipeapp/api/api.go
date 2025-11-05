@@ -24,7 +24,7 @@ func LandingPage(c *gin.Context) {
 func GetRecipes(c *gin.Context) {
 	id, err := uuid.Parse(cookie.GetCookie(c))
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	db, err := database.GetDB()
 	if err != nil {
