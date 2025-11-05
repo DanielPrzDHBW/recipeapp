@@ -8,34 +8,35 @@ import (
 	"recipeapp/database"
 	"recipeapp/models"
 	"recipeapp/serverError"
+	"recipeapp/shoppinglist"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-var recipes = []models.Meal{}        // Placeholder for a database
-var shoppingList = []string{"test0"} // Placeholder for a database
-
-// Placeholder to serve the landing page frontend
-func LandingPage(c *gin.Context) {
-}
-
-// Placeholder for future implementation of reading previous generated recipes from a database
 func GetRecipes(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"recipe":        recipes,
-		"shopping_list": shoppingList,
-	})
 	id, err := uuid.Parse(cookie.GetCookie(c))
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 	db, err := database.GetDB()
 	if err != nil {
 		log.Fatal(err)
 	}
-	database.GetRecipesFromDBByUUID(db, id)
-	// TODO: implement further usage of the recipes
+	recipes, err := database.GetRecipesFromDBByUUID(db, id)
+	if err != nil {
+		log.Println(err)
+		c.JSON(500, gin.H{
+			"error": "Internal server error"})
+		return
+	}
+	converter := shoppinglist.IngredientConverter{}
+	shoppingList := converter.ConvertMeals(recipes)
+	c.JSON(200, gin.H{
+		"recipe":        recipes,
+		"shopping_list": shoppingList,
+	})
 }
 
 // Generates 7 new recipes and returning the as a JSON array
@@ -62,11 +63,8 @@ func NewRecipes(c *gin.Context) {
 			i--
 		}
 	}
-	shoppingList = append(shoppingList, "Test Item 1", "Test Item 2", "Test Item 3") // Placeholder for shopping list generation
-	c.JSON(200, gin.H{
-		"recipe":        recipes,
-		"shopping_list": shoppingList,
-	})
+	converter := shoppinglist.IngredientConverter{}
+	shoppingList := converter.ConvertMeals(recipes)
 	db, err := database.GetDB()
 	if err != nil {
 		log.Fatal(err)
@@ -76,4 +74,8 @@ func NewRecipes(c *gin.Context) {
 		log.Fatal(err)
 	}
 	cookie.SetCookie(c, id.String())
+	c.JSON(200, gin.H{
+		"recipe":        recipes,
+		"shopping_list": shoppingList,
+	})
 }
