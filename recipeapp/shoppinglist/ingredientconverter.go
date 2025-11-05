@@ -106,7 +106,7 @@ func (ic *IngredientConverter) formatShoppingList() []string {
 		amountStr := formatAmount(amount)
 
 		// Create the formatted string without spaces
-		item := ingredient + "-" + amountStr + "-" + unit
+		item := ingredient + " - " + amountStr + " " + unit
 		shoppingList = append(shoppingList, item)
 	}
 
